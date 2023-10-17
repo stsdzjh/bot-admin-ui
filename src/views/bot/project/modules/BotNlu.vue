@@ -141,10 +141,10 @@ export default {
         that.intentList = response.rows;
         that.intentFilterList = response.rows;
         that.intentTotal = response.total;
-        that.intentFilterList = [];
+        /*that.intentFilterList = [];
         that.intentList.forEach( item => {
           that.intentFilterList.push({text: item.intentContent, value: item.intentId})
-        })
+        })*/
       })
     },
     intentSearch(value){
@@ -173,6 +173,7 @@ export default {
     },
     nluSelected(row){
       this.currentSelectedNLU = row
+      this.intentFilterList = this.intentList
     },
     handleNluInputBlur(row){
       console.log("blur",row)

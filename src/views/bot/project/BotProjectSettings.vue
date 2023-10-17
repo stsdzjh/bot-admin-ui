@@ -25,6 +25,10 @@
         <bot-form :project-id="projectId"></bot-form>
       </el-tab-pane>
 
+      <el-tab-pane label="同义词" name="SYNONYMS">
+        <bot-synonyms :project-id="projectId"></bot-synonyms>
+      </el-tab-pane>
+
       <el-tab-pane label="模型" name="MODEL">
         <bot-model></bot-model>
       </el-tab-pane>
@@ -43,10 +47,11 @@ import BotStory from "./modules/BotStory";
 import BotEntity from "./modules/BotEntity";
 import BotSlot from "./modules/BotSlot";
 import BotForm from "./modules/BotForm";
+import BotSynonyms from './modules/BotSynonyms'
 
 export default {
   name: "BotProjectSettings",
-  components: {BotForm, BotSlot, BotEntity, BotStory, BotNlu, BotModel},
+  components: { BotSynonyms, BotForm, BotSlot, BotEntity, BotStory, BotNlu, BotModel},
   data(){
     return {
       projectId: null,
