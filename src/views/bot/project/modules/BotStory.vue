@@ -119,6 +119,9 @@
                 <el-select v-model="item.sessionContent" v-show="item.actionType == 'form'">
                   <el-option v-for="item in formList" :key="item.formId" :label="'表单-' + item.formName" :value="item.formName"></el-option>
                 </el-select>
+                <el-select v-model="item.sessionContent" v-show="item.actionType == 'select'" @change="selectUtterChange($event,item)">
+                  <el-option v-for="item in utterStorySessionList" :key="item.sessionResponseId" :label="item.sessionContent" :value="item.sessionContent"></el-option>
+                </el-select>
               </el-col>
 
               <el-col :span="4">
@@ -237,7 +240,7 @@
 </template>
 
 <script>
-import { delStory, listStory, batchAddStorySession, addStory, editStory, listStorySession} from "@/api/bot/story";
+import { delStory, listStory, batchAddStorySession, addStory, editStory, listStorySession, listUtterStorySession} from "@/api/bot/story";
 import { listIntent, addIntent, makeid } from "@/api/bot/project"
 import { listForm } from "@/api/bot/form";
 import { listSlot} from '@/api/bot/slot';
@@ -273,9 +276,11 @@ export default {
       actionList: [
         { value: "text", label: "文本"},
         { value: "form", label: "表单"},
+        { value: "select", label: "复用"},
         { value: "custom", label: "自定义"}
         ],
-      faqList: []
+      faqList: [],
+      utterStorySessionList: []
 
     }
   },
@@ -287,9 +292,20 @@ export default {
     this.getIntentList();
     this.getFormList();
     this.getSlotList();
+    this.getUtterStorySessionList();
     this.storyForm.projectId = this.projectId;
   },
   methods: {
+    selectUtterChange(e,item){
+      console.log("item",item,e);
+      let opt = this.getOptBySessionContent(item.sessionContent);
+      item.sessionResponseId = opt.sessionResponseId;
+      item.sessionContent = opt.sessionContent;
+    },
+    getOptBySessionContent(sessionContent){
+      let opt = this.utterStorySessionList.find((item) => item.sessionContent == sessionContent);
+      return opt;
+    },
     getStoryList(){
       let that = this;
       listStory({projectId: this.projectId, storyType: 'story', pageNum: 1, pageSize: 0}).then(response => {
@@ -413,8 +429,15 @@ export default {
     getStorySessionList(){
       let that = this
       listStorySession(this.storySessionQueryParams).then(response =>{
-        console.log("response list",response);
         that.currentStorySessionList = response.rows;
+      })
+    },
+    getUtterStorySessionList(){
+      let that = this
+      listUtterStorySession({projectId: this.projectId}).then(response => {
+        console.log("this.getUtterStorySessionList();",response)
+        that.utterStorySessionList = response.data;
+
       })
     },
     intentSearch(value){
@@ -491,7 +514,8 @@ export default {
         storyId: this.currentSelectedStory.storyId,
         sessionIntent: null,
         sessionResponseId: uuid
-      })
+      });
+      this.getUtterStorySessionList();
 
     },
     getFormList(){

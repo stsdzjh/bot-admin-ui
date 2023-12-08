@@ -51,3 +51,11 @@ export function  editStory(data){
     data: data
   })
 }
+
+export function listUtterStorySession(query){
+  return request({
+    url: '/bot/storySession/listUtter',
+    method: 'get',
+    params: query
+  })
+}

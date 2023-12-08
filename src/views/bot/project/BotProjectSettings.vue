@@ -32,6 +32,9 @@
       <el-tab-pane label="模型" name="MODEL">
         <bot-model></bot-model>
       </el-tab-pane>
+      <el-tab-pane label="会话" name="TRACKER">
+        <bot-tracker :project-id="projectId"></bot-tracker>
+      </el-tab-pane>
 
     </el-tabs>
     <el-button type="primary" style='position: absolute;right:40px;top:22px;' @click="trainProject">训练模型</el-button>
@@ -48,10 +51,11 @@ import BotEntity from "./modules/BotEntity";
 import BotSlot from "./modules/BotSlot";
 import BotForm from "./modules/BotForm";
 import BotSynonyms from './modules/BotSynonyms'
+import BotTracker from './modules/BotTracker'
 
 export default {
   name: "BotProjectSettings",
-  components: { BotSynonyms, BotForm, BotSlot, BotEntity, BotStory, BotNlu, BotModel},
+  components: { BotTracker, BotSynonyms, BotForm, BotSlot, BotEntity, BotStory, BotNlu, BotModel},
   data(){
     return {
       projectId: null,

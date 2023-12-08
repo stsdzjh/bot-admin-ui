@@ -16,7 +16,7 @@
             <el-popover placement="right" width="300" trigger="click" >
               <el-input v-model="intentSearchContent" placeholder="意图过滤或者新增" @input="intentSearch"></el-input>
               <el-table :data="intentFilterList" style="width: 100%" :show-header="false" highlight-current-row @current-change="handleIntentSelect" :header-cell-style="{ background:'#fff',color:'#909399', fontSize:'1.1em', fontWeight: 'bold'}">
-                <el-table-column property="intentContent" label="意图列表"></el-table-column>
+                <el-table-column property="text" label="意图列表"></el-table-column>
               </el-table>
               <el-button style="width: 100%;margin-top: 10px;" type="primary" :disabled="intentFilterList.length > 0" @click="newIntent">创建意图</el-button>
               <el-button slot="reference" @click="nluSelected(scope.row)"><template v-if="scope.row.intentId == 0">请选择意图</template><template v-else>{{getIntentContentById(scope.row.intentId)}}</template></el-button>
@@ -82,7 +82,7 @@ export default {
       intentFilterList: [],
       intentList: [],
       input: '',
-
+      currentSelectedNLU: {},
       intentQueryParams: {
         pageNum: 1,
         pageSize: 0,
@@ -139,12 +139,12 @@ export default {
       let that = this;
       listIntent(this.intentQueryParams).then(response => {
         that.intentList = response.rows;
-        that.intentFilterList = response.rows;
         that.intentTotal = response.total;
-        /*that.intentFilterList = [];
+        that.intentFilterList = [];
         that.intentList.forEach( item => {
           that.intentFilterList.push({text: item.intentContent, value: item.intentId})
-        })*/
+        })
+        console.log("getIntentList",that.intentList);
       })
     },
     intentSearch(value){
@@ -157,13 +157,17 @@ export default {
       });
       let that =  this;
       listIntent(intentFilterParams).then(response => {
-        that.intentFilterList = response.rows;
+        that.intentFilterList = [];
+        response.rows.forEach( item => {
+          that.intentFilterList.push({text: item.intentContent, value: item.intentId})
+        })
       });
 
     },
     handleIntentSelect(row){
+      console.log('row',row);
       if(row == null) return ;
-      this.currentSelectedNLU.intentId = row.intentId
+      this.currentSelectedNLU.intentId = row.value;
       let that = this;
       updateNLU(this.currentSelectedNLU).then(response =>{
         that.getNluList();
@@ -173,7 +177,11 @@ export default {
     },
     nluSelected(row){
       this.currentSelectedNLU = row
-      this.intentFilterList = this.intentList
+      console.log('abc')
+      this.intentFilterList = [];
+      this.intentList.forEach( item => {
+        this.intentFilterList.push({text: item.intentContent, value: item.intentId})
+      })
     },
     handleNluInputBlur(row){
       console.log("blur",row)
